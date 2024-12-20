@@ -1,7 +1,7 @@
 package com.example.carpooling_glsi3.entities;
 
-
 import com.example.carpooling_glsi3.enums.ReservationStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,12 +27,13 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
-
     @ManyToOne
     @JoinColumn(name = "ride_id", nullable = false)
+    @JsonIgnore  // Preventing infinite recursion
     private Ride ride;
 
     @ManyToOne
     @JoinColumn(name = "passenger_id", nullable = false)
+    @JsonIgnore  // Preventing infinite recursion
     private User passenger;
 }

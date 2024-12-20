@@ -1,6 +1,7 @@
 package com.example.carpooling_glsi3.entities;
 
 import com.example.carpooling_glsi3.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,15 +37,16 @@ public class User implements UserDetails {
     private Integer totalRatings = 0;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // Preventing infinite recursion
     private List<Ride> rides;
 
     @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // Preventing infinite recursion
     private List<Reservation> reservations;
 
     public void updateRating(Integer newRating) {
         rating = ((rating * totalRatings) + newRating) / (++totalRatings);
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

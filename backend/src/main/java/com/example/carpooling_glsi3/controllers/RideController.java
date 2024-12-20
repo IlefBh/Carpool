@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/rides")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RideController {
 
     private final com.example.carpooling_glsi3.services.ride.RideService rideService;
@@ -56,6 +57,11 @@ public class RideController {
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
+    }
+    @GetMapping("/get-rides")
+    public ResponseEntity<List<Ride>> getAllRides() {
+        List<Ride> rides = rideService.getAllRides();
+        return ResponseEntity.ok(rides);
     }
 
     @DeleteMapping("/delete/{rideId}")

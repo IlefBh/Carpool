@@ -20,7 +20,8 @@ public class UserService implements UserServiceInterface{
 
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public void updateUserRating(Long userId, Integer newRating) {
@@ -50,8 +51,9 @@ public class UserService implements UserServiceInterface{
 
     @Override
     public UserDto convertUserToDto(User user) {
-        return modelMapper.map(user, UserDto.class);
+        return new UserDto(user);  // Directly use the constructor that manually maps the fields
     }
+
 
 
 

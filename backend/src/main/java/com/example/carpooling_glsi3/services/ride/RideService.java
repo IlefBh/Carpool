@@ -49,6 +49,10 @@ public class RideService implements RideServiceInterface {
         }
         rideRepository.delete(ride);
     }
+    public List<Ride> getAllRides() {
+        return rideRepository.findAll();
+    }
+
 
 
 }
