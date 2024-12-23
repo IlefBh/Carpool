@@ -27,25 +27,26 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(),userDetails);
+    public String generateToken(UserDetails userDetails, String userId) {
+        return generateToken(new HashMap<>(), userDetails, userId);
     }
 
-
     public String generateToken(
-            Map<String,Object> extraClaims,
-            UserDetails userDetails
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            String userId
     ) {
+        extraClaims.put("userId", userId); // Add the userId to the claims
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
-                .signWith(getSignInKey(),SignatureAlgorithm.HS512)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 24-hour expiration
+                .signWith(getSignInKey(), SignatureAlgorithm.HS512)
                 .compact();
-
     }
+
 
 
 

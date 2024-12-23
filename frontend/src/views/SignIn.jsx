@@ -32,7 +32,7 @@ function SignIn() {
             localStorage.setItem('token', token);
 
             // Manually define the redirect path
-            const redirectPath = '/rides'; // Change this to the desired path
+            const redirectPath = '/profile'; // Change this to the desired path
             window.location.href = redirectPath;
         } catch (error) {
             console.error('Error:', error.response?.data?.message || 'An error occurred');

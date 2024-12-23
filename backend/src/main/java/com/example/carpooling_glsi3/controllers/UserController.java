@@ -36,6 +36,7 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+
     // Endpoint to update user rating
     @PutMapping("/{id}/rating")
     public ResponseEntity<Void> updateUserRating(

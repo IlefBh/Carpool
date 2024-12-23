@@ -1,5 +1,7 @@
 package com.example.carpooling_glsi3.controllers;
 
+import com.example.carpooling_glsi3.dto.ReservationWithReviewDTO;
+import com.example.carpooling_glsi3.dto.ReservationWithRideDTO;
 import com.example.carpooling_glsi3.entities.Reservation;
 import com.example.carpooling_glsi3.entities.User;
 import com.example.carpooling_glsi3.requests.CreateReservationRequest;
@@ -40,19 +42,27 @@ public class ReservationController {
 
     @GetMapping("/passenger/{passengerId}")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<List<Reservation>> getReservationsByPassenger(@PathVariable Long passengerId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<List<ReservationWithRideDTO>> getReservationsByPassenger(
+            @PathVariable Long passengerId,
+            @AuthenticationPrincipal User user) {
+
         if (!passengerId.equals(user.getId())) {
             throw new RuntimeException("You can only access your own reservations");
         }
-        List<Reservation> reservations = reservationService.getReservationsByPassengerId(passengerId);
+
+        List<ReservationWithRideDTO> reservations = reservationService.getReservationsByPassengerId(passengerId);
         return ResponseEntity.ok(reservations);
     }
-
     @GetMapping("/ride/{rideId}")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<List<Reservation>> getReservationsByRide(@PathVariable Long rideId, @AuthenticationPrincipal User user) {
-        // Assuming this method checks if the user is the driver of the ride before allowing access
-        List<Reservation> reservations = reservationService.getReservationsByRideId(rideId);
-        return ResponseEntity.ok(reservations);
+    public ResponseEntity<List<ReservationWithReviewDTO>> getReservationsByRide(
+            @PathVariable Long rideId,
+            @AuthenticationPrincipal User user) {
+
+        List<ReservationWithReviewDTO> reservationsWithReviews =
+                reservationService.getReservationsWithReviewsByRide(rideId);
+
+        return ResponseEntity.ok(reservationsWithReviews);
     }
+
 }

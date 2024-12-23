@@ -1,6 +1,5 @@
 package com.example.carpooling_glsi3.services.auth;
 
-
 import com.example.carpooling_glsi3.entities.User;
 import com.example.carpooling_glsi3.repositories.UserRepository;
 import com.example.carpooling_glsi3.requests.AuthenticationRequest;
@@ -37,7 +36,10 @@ public class AuthenticationService {
                 .role(request.getRole())
                 .build();
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+
+        // Get user ID from the user entity and generate the JWT token
+        var jwtToken = jwtService.generateToken(user, user.getId().toString()); // Pass userId
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -52,13 +54,12 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+
+        // Get user ID from the user entity and generate the JWT token
+        var jwtToken = jwtService.generateToken(user, user.getId().toString()); // Pass userId
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
-
-
-
 }

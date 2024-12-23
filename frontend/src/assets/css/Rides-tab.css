@@ -153,6 +153,18 @@ table.users-tab thead tr {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* ombre pour effet de profondeur */
     width: 25%;
 }
+.confirmation-popup-review {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #EBEEF6;
+    padding: 20px;
+    border-radius: 20px;
+    z-index: 1001; /* assure que le pop-up est au-dessus du fond sombre */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* ombre pour effet de profondeur */
+    width: 50%;
+}
 .quest{
     width: 50%;
 }
@@ -239,6 +251,17 @@ span.attr {
     padding-left: 2%;
     font-size: 18px;
 }
+.pop-input {
+    margin-left: 4%;
+    padding: 5px;
+    border: orange;
+}
+.popup-actions {
+    display: flex;
+    align-content: center;
+    justify-content: space-evenly;
+    margin-top: 30px;
+}
 .ride-reserve{
     background-color: #e4a357;
     color: white;
@@ -247,7 +270,7 @@ span.attr {
     padding: 4px, 8px;
     margin: 4px;
     border: none;
-    border-radius: 20px;
+    border-radius: 5px;
 }
 p.pop-detail {
     background-color: white;

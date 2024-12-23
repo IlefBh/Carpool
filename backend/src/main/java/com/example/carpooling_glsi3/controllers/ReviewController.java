@@ -1,8 +1,10 @@
 package com.example.carpooling_glsi3.controllers;
 
+import com.example.carpooling_glsi3.dto.ReservationWithReviewDTO;
 import com.example.carpooling_glsi3.entities.Review;
 import com.example.carpooling_glsi3.entities.User;
 import com.example.carpooling_glsi3.requests.CreateReviewRequest;
+import com.example.carpooling_glsi3.services.reservation.ReservationService;
 import com.example.carpooling_glsi3.services.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final ReservationService reservationService;
 
     @PostMapping("/create-review")
     @PreAuthorize("hasRole('PASSENGER')")
@@ -31,11 +34,15 @@ public class ReviewController {
         return ResponseEntity.ok(review);
     }
 
-    @GetMapping("/ride/{rideId}")
-    @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<List<Review>> getReviewsForRide(@PathVariable Long rideId) {
-        List<Review> reviews = reviewService.getReviewsForRide(rideId);
-        return ResponseEntity.ok(reviews);
+    public ResponseEntity<List<ReservationWithReviewDTO>> getReservationsByRide(
+            @PathVariable Long rideId,
+            @AuthenticationPrincipal User user) {
+
+        // Assuming this method checks if the user is the driver of the ride before allowing access
+        List<ReservationWithReviewDTO> reservationsWithReviews =
+                reservationService.getReservationsWithReviewsByRide(rideId);
+
+        return ResponseEntity.ok(reservationsWithReviews);
     }
 
     // Optional: If you want to get reviews by a specific reviewer

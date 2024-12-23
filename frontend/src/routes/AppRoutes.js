@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CreateRide from '../views/CreateRide';
+import MyRides from '../views/MyRides';
 import Profile from '../views/Profile';
 import RidesHistory from '../views/RidesHistory';
 import Rides from '../views/RidesTable';
@@ -15,6 +17,8 @@ function AppRoutes() {
                 <Route path="/rides" element={<Rides />} />
                 <Route path="/history" element={<RidesHistory />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/myrides" element={<MyRides />} />
+                <Route path="/create-ride" element={<CreateRide />} />
             </Routes>
         </Router>
     );

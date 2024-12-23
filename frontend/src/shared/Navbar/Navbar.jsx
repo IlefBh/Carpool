@@ -12,14 +12,7 @@ const NavigationMenu = () => {
     const [user, setUser] = useState(null); // Updated state to store user data
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            const role = decodedToken.userType;
-            setUserRole(role);
-        }
-    }, []);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,14 +22,21 @@ const NavigationMenu = () => {
                     const decodedToken = jwtDecode(token);
                     const userId = decodedToken.userId;
 
-                    // Fetch user data (email, firstname, lastname)
-                    const response = await axios.get(`http://localhost:8080/api/v1/user/user/${userId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`, // Ensure token is included in request
-                        }
-                    });
+                    if (!userId) {
+                        throw new Error('User ID is missing from token');
+                    }
 
-                    setUser(response.data); // Store user data
+                    // Fetch user data
+                    const response = await axios.get(
+                        `http://localhost:8080/api/v1/user/user/${userId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+
+                    setUser(response.data);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
                 }
@@ -45,6 +45,11 @@ const NavigationMenu = () => {
 
         fetchData();
     }, []);
+    useEffect(() => {
+        if (user) {
+            setUserRole(user.role);
+        }
+    }, [user]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -57,10 +62,17 @@ const NavigationMenu = () => {
                 <img className='nav-logo' src={logo} alt="Logo" />
             </div>
             <div className='navs'>
-                <NavLink className='nav' exact to="/history" activeClassName="active">Rides History</NavLink>
-                <NavLink className='nav' to="/rides" activeClassName="active">Rides</NavLink>
                 {userRole === "DRIVER" && (
-                    <NavLink className='nav' to="/upload" activeClassName="active">Upload Document</NavLink>
+                    <NavLink className='nav' to="/myrides" activeClassName="active">My Rides</NavLink>
+                )}
+                {userRole === "DRIVER" && (
+                    <NavLink className='nav' to="/create-ride" activeClassName="active">Create a Ride</NavLink>
+                )}
+                {userRole === "PASSENGER" && (
+                    <NavLink className='nav' exact to="/history" activeClassName="active">Rides History</NavLink>
+                )}
+                {userRole === "PASSENGER" && (
+                    <NavLink className='nav' to="/rides" activeClassName="active">Rides</NavLink>
                 )}
             </div>
             <div>
@@ -72,10 +84,14 @@ const NavigationMenu = () => {
             </div>
 
             <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
-                <NavLink className='nav' exact to="/history" activeClassName="active">Rides History</NavLink>
-                <NavLink className='nav' to="/rides" activeClassName="active">Rides</NavLink>
                 {userRole === "DRIVER" && (
-                    <NavLink className='nav' to="/upload" activeClassName="active">Upload Document</NavLink>
+                    <NavLink className='nav' to="/create-ride" activeClassName="active">Create a ride</NavLink>
+                )}
+                {userRole === "PASSENGER" && (
+                    <NavLink className='nav' exact to="/history" activeClassName="active">Rides History</NavLink>
+                )}
+                {userRole === "PASSENGER" && (
+                    <NavLink className='nav' to="/rides" activeClassName="active">Rides</NavLink>
                 )}
                 <div className="profile-lang">
                     <NavLink className='profile' to="/profile">

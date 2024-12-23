@@ -1,11 +1,15 @@
 package com.example.carpooling_glsi3.services.reservation;
 
 
+import com.example.carpooling_glsi3.dto.ReservationWithReviewDTO;
 import com.example.carpooling_glsi3.entities.Reservation;
+import com.example.carpooling_glsi3.entities.Review;
 import com.example.carpooling_glsi3.entities.Ride;
 import com.example.carpooling_glsi3.entities.User;
 import com.example.carpooling_glsi3.repositories.ReservationRepository;
+import com.example.carpooling_glsi3.repositories.ReviewRepository;
 import com.example.carpooling_glsi3.repositories.RideRepository;
+import com.example.carpooling_glsi3.dto.ReservationWithRideDTO;
 import com.example.carpooling_glsi3.repositories.UserRepository;
 import com.example.carpooling_glsi3.enums.ReservationStatus;
 
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class ReservationService implements ReservationServiceInterface {
     private final UserRepository userRepository;
     private final RideRepository rideRepository;
     private final ReservationRepository reservationRepository;
+    private final ReviewRepository reviewRepository;
 
 
     @Override
@@ -56,13 +62,38 @@ public class ReservationService implements ReservationServiceInterface {
     }
 
     @Override
-    public List<Reservation> getReservationsByPassengerId(Long passengerId) {
-        return reservationRepository.findByPassengerId(passengerId);
+    public List<ReservationWithRideDTO> getReservationsByPassengerId(Long passengerId) {
+        List<Reservation> reservations = reservationRepository.findByPassengerIdWithRide(passengerId);
+        return reservations.stream()
+                .map(ReservationWithRideDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Reservation> getReservationsByRideId(Long rideId) {
         return reservationRepository.findByRideId(rideId);
+    }
+    public List<ReservationWithReviewDTO> getReservationsWithReviewsByRide(Long rideId) {
+        List<Reservation> reservations = reservationRepository.findByRideId(rideId);
+
+        return reservations.stream().map(reservation -> {
+            String firstName = reservation.getPassenger().getFirstname();
+            String lastName = reservation.getPassenger().getLastname();
+            int reservedSeats = reservation.getNumberOfSeats(); // Extract reserved seats
+
+            // Fetch review if it exists
+            Review review = reviewRepository.findByRideIdAndReviewerId(
+                    rideId, reservation.getPassenger().getId()
+            );
+
+            return new ReservationWithReviewDTO(
+                    firstName,
+                    lastName,
+                    reservedSeats, // Include reserved seats
+                    review != null ? review.getComment() : null,
+                    review != null ? review.getRating() : null
+            );
+        }).collect(Collectors.toList());
     }
 
 }

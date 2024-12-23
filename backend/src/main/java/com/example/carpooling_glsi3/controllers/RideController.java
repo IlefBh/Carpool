@@ -58,6 +58,27 @@ public class RideController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
+    @GetMapping("/my-rides")
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<List<RideResponse>> getRidesByDriver(@AuthenticationPrincipal User user) {
+        // Fetch rides for the authenticated driver
+        List<Ride> rides = rideRepository.findByDriverId(user.getId());
+
+        // Convert rides to response DTOs
+        List<RideResponse> rideResponses = rides.stream()
+                .map(ride -> RideResponse.builder()
+                        .id(ride.getId())
+                        .origin(ride.getDepartureLocation())
+                        .destination(ride.getDestination())
+                        .departureTime(ride.getDepartureDateTime())
+                        .availableSeats(ride.getAvailableSeats())
+                        .driver(new UserDto(ride.getDriver()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(rideResponses);
+    }
+
     @GetMapping("/get-rides")
     public ResponseEntity<List<Ride>> getAllRides() {
         List<Ride> rides = rideService.getAllRides();

@@ -30,17 +30,25 @@ public class UserService implements UserServiceInterface{
         userRepository.save(user);
     }
 
-
     @Override
     public User updateUser(UserUpdateRequest request, Long userId) {
-        return  userRepository.findById(userId).map(existingUser ->{
-            existingUser.setFirstname(request.getFirstName());
-            existingUser.setLastname(request.getLastName());
-            existingUser.setEmail(request.getEmail());
+        return userRepository.findById(userId).map(existingUser -> {
+            if (request.getFirstName() != null) {
+                existingUser.setFirstname(request.getFirstName());
+            }
+            if (request.getLastName() != null) {
+                existingUser.setLastname(request.getLastName());
+            }
+            if (request.getEmail() != null && !request.getEmail().equals(existingUser.getEmail())) {
+                if (userRepository.existsByEmail(request.getEmail())) {
+                    throw new RuntimeException("Email is already in use");
+                }
+                existingUser.setEmail(request.getEmail());
+            }
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found!"));
-
     }
+
 
     @Override
     public void deleteUser(Long userId) {
